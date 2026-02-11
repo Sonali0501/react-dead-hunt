@@ -1,11 +1,14 @@
 {
   "name": "react-dead-hunt",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Interactive CLI to find unused React components, hooks, utils, and types.",
   "main": "index.js",
   "type": "module",
   "bin": {
     "react-dead-hunt": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "files": [
     "index.js",
