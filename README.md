@@ -36,29 +36,27 @@ react-dead-hunt
 
 The tool will prompt you with the following questions:
 
-### 1. **Folder to scan for exports** (default: `./src`)
+### 1. **Folder to scan for dead code** (default: `./src`)
 
-Specify the directory where your components, hooks, and utilities are defined.
+Specify the directory to scan for both exports and usages. The tool will analyze all JavaScript/TypeScript files in this directory.
 
-### 2. **Folder to scan for usages** (default: `./src`)
+### 2. **What do you want to hunt for?**
 
-Specify the directory where your code is used (usually your main app directory).
+Select which types of unused code to search for (required — select at least one):
 
-### 3. **What do you want to hunt for?**
+- ☐ **Components** — PascalCase exports (e.g., `Button`, `UserProfile`)
+- ☐ **Custom Hooks** — Functions starting with `use` (e.g., `useAuth`, `useFetch`)
+- ☐ **Utility Functions** — camelCase functions (e.g., `formatDate`, `calculateTotal`)
+- ☐ **Type Definitions** — TypeScript interfaces and types (e.g., `User`, `ApiResponse`)
 
-Select which types of unused code to search for:
-
-- **Components** — PascalCase exports (e.g., `Button`, `UserProfile`)
-- **Custom Hooks** — Functions starting with `use` (e.g., `useAuth`, `useFetch`)
-- **Utility Functions** — camelCase functions (e.g., `formatDate`, `calculateTotal`)
-- **Type Definitions** — TypeScript interfaces and types (e.g., `User`, `ApiResponse`)
+Use **spacebar** to toggle selections, then press **Enter** to proceed.
 
 ## How It Works
 
 React Dead Hunt analyzes your codebase in two passes:
 
-1. **Discovery Pass** — Scans the export directory and identifies all exported components, hooks, functions, and types using AST parsing
-2. **Usage Pass** — Checks the search directory for actual usages of each exported item through JSX elements, function calls, and type references
+1. **Discovery Pass** — Scans the specified directory and identifies all exported components, hooks, functions, and types using AST parsing (based on your selections)
+2. **Usage Pass** — Checks the same directory for actual usages of each exported item through JSX elements, function calls, and type references
 
 After analysis, the tool displays:
 
@@ -72,29 +70,26 @@ After analysis, the tool displays:
 
 Run the tool and when prompted:
 
-- **Folder to scan for exports:** `./src`
-- **Folder to scan for usages:** `./src`
+- **Folder to scan for dead code:** `./src`
 - **Select:** Components (PascalCase) and Custom Hooks (use...)
 
-### Hunt in a monorepo structure
+### Hunt for all types of unused code
 
-- **Folder to scan for exports:** `./packages/ui/src`
-- **Folder to scan for usages:** `./apps/web/src`
-- **Select:** All options
+- **Folder to scan for dead code:** `./src`
+- **Select:** All options (Components, Hooks, Functions, Types)
 
-### Find unused TypeScript types
+### Find unused utility functions only
 
-- **Folder to scan for exports:** `./src/types`
-- **Folder to scan for usages:** `./src`
-- **Select:** Type Definitions (Interfaces/Types)
+- **Folder to scan for dead code:** `./src/utils`
+- **Select:** Utility Functions (camelCase)
 
 ## Output
 
 The tool displays results as a formatted table showing:
 
-- **Export Name** — The name of the unused export
-- **File Path** — Where it's exported from
 - **Type** — Component, Hook, Function, or Type
+- **Name** — The name of the unused export
+- **Source File** — Where it's defined
 
 ## What Gets Detected
 

@@ -3,7 +3,8 @@
 import fs from "fs";
 import path from "path";
 import inquirer from "inquirer";
-import { globSync } from "fast-glob";
+import fastGlob from "fast-glob";
+const { globSync } = fastGlob;
 import * as parser from "@babel/parser";
 import _traverse from "@babel/traverse";
 const traverse = _traverse.default;
@@ -17,14 +18,8 @@ async function run() {
   const answers = await inquirer.prompt([
     {
       type: "input",
-      name: "componentDir",
-      message: "Folder to scan for exports (where components/hooks live):",
-      default: "./src",
-    },
-    {
-      type: "input",
-      name: "searchDir",
-      message: "Folder to scan for usages (where the app lives):",
+      name: "scanDir",
+      message: "Folder to scan for dead code:",
       default: "./src",
     },
     {
@@ -32,19 +27,23 @@ async function run() {
       name: "targetTypes",
       message: "What do you want to hunt for?",
       choices: [
-        { name: "Components (PascalCase)", value: "Component", checked: true },
-        { name: "Custom Hooks (use...)", value: "Hook", checked: true },
+        { name: "Components (PascalCase)", value: "Component" },
+        { name: "Custom Hooks (use...)", value: "Hook" },
         {
           name: "Utility Functions (camelCase)",
           value: "Function",
-          checked: true,
         },
         {
           name: "Type Definitions (Interfaces/Types)",
           value: "Type",
-          checked: true,
         },
       ],
+      validate: (answer) => {
+        if (answer.length === 0) {
+          return "Please select at least one option to hunt for";
+        }
+        return true;
+      },
     },
   ]);
 
@@ -59,7 +58,7 @@ async function run() {
   };
 
   // PASS 1: Find all Exports
-  const exportFiles = globSync(`${answers.componentDir}/**/*.{js,jsx,ts,tsx}`, {
+  const exportFiles = globSync(`${answers.scanDir}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ["**/node_modules/**", "**/dist/**", "**/*.d.ts"],
   });
 
@@ -129,7 +128,7 @@ async function run() {
 
   // PASS 2: AST-based Check Usages
   // Parse each usage file and traverse its AST to find real identifier, JSX and type references.
-  const usageFiles = globSync(`${answers.searchDir}/**/*.{js,jsx,ts,tsx}`, {
+  const usageFiles = globSync(`${answers.scanDir}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ["**/node_modules/**", "**/dist/**"],
   });
 
@@ -245,7 +244,9 @@ async function run() {
   spinner.stop();
 
   // RESULTS
-  const unused = [...registry.entries()].filter(([_, data]) => !data.used);
+  const unused = [...registry.entries()].filter(
+    ([_, data]) => !data.used && answers.targetTypes.includes(data.type),
+  );
 
   if (unused.length === 0) {
     console.log(chalk.green("\n✨ No dead code found! Your codebase is lean."));
