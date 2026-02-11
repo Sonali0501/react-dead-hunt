@@ -1,0 +1,19 @@
+# Ignore local development files
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Ignore local testing/playground folders
+example/
+tests/
+test-codebase/
+
+# Ignore config files
+.gitignore
+.prettierrc
+.eslintrc
+tsconfig.json
+
+# Ignore system files
+.DS_Store
+Thumbs.db
