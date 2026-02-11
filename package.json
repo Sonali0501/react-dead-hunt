@@ -22,6 +22,9 @@
     "cli",
     "clean-up"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Sonali Nogja",
   "license": "MIT",
   "dependencies": {
